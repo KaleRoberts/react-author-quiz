@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
 import './index.css';
 import AuthorQuiz from './AuthorQuiz';
 import registerServiceWorker from './registerServiceWorker';
@@ -70,8 +71,28 @@ const onAnswerSelected = (answer) => {
   render();
 };
 
+const AddAuthorForm = ({match}) => {
+  return (
+    <div>
+      <h1> Add Author </h1>
+      <p>{JSON.stringify(match)}</p>
+    </div>
+  )
+}
+
+const App = () => {
+  return <AuthorQuiz {...state} onAnswerSelected={onAnswerSelected} />;
+}
+
 const render = () => {
-  ReactDOM.render(<AuthorQuiz {...state} onAnswerSelected={onAnswerSelected}/>, document.getElementById('root'));
+  ReactDOM.render(
+    <BrowserRouter>
+      <React.Fragment>    {/*Two routes cannot be direct children of BrowserRouter, thus we use React.Fragment to wrap them together under single parent.*/}
+        <Route exact path="/" component={App} />    {/*React.Fragment does not add anything to the DOM*/}
+        <Route path="/add" component={AddAuthorForm} />
+      </React.Fragment>
+    </BrowserRouter>, document.getElementById('root')
+  );
 }
 render();
 registerServiceWorker();
