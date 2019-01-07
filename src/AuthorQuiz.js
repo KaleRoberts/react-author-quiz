@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import logo from './logo.svg';s
 import './App.css';
 import './bootstrap.min.css';
 
@@ -14,7 +13,6 @@ const Hero = (props) => {
     </div>
   )
 };
-
 
 const Book = ({title, onClick}) => {
   return (
