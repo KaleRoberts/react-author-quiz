@@ -58,9 +58,16 @@ const Turn = ({author, books, highlight, onAnswerSelected}) => {
 //   highlight: PropTypes.string.isRequired
 // }
 
-const Continue = (props) => {
+const Continue = ({show, onContinue}) => {
   return (
-    <div></div>
+    <div className="row continue">
+      {
+        show ? <div className="col-11">
+          <button className="btn btn-primary btn-lg float-right" onClick={onContinue}>CONTINUE</button>
+          </div>
+          : null
+      }
+    </div>
   )
 };
 
@@ -76,12 +83,12 @@ const Footer = (props) => {
   )
 };
 
-const AuthorQuiz = ({turnData, highlight, onAnswerSelected}) => {
+const AuthorQuiz = ({turnData, highlight, onAnswerSelected, onContinue}) => {
     return (
       <div className="container-fluid">
         <Hero />
         <Turn {...turnData} highlight={highlight} onAnswerSelected={onAnswerSelected}/>
-        <Continue />
+        <Continue show={highlight === 'correct'} onContinue={onContinue}/>
         <p>
             <Link to="/add">Add an Author</Link>
         </p>

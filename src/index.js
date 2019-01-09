@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route, withRouter } from 'react-router-dom';
 import './index.css';
 import AuthorQuiz from './AuthorQuiz';
+import AddAuthorForm from './AddAuthorForm';
 import registerServiceWorker from './registerServiceWorker';
 import {shuffle, sample} from 'underscore';
 
@@ -44,6 +45,12 @@ const authors = [
     imageUrl: 'images/authors/williamshakespeare.jpg',
     imageSource: 'Wikimedia Commons',
     books: ['Hamlet', 'Macbeth', 'Romeo and Juliet']
+  },
+  {
+    name: 'Philip K. Dick',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/8b/Philip_k_dick_drawing.jpg',
+    imageSource: 'Wikimedia Commons',
+    books: ['Do Androids Dream of Electric Sheep?', 'The Man in the High Castle', 'Ubik', 'Galactic Pot-Healer']
   }
 ];
 
@@ -60,10 +67,14 @@ const getTurnData = (authors) => {
   }
 };
 
-const state = {
-  turnData: getTurnData(authors),
-  highlight: ''
-};
+const resetState = () => {
+  return {
+    turnData: getTurnData(authors),
+    highlight: ''
+  }
+}
+
+let state = resetState();
 
 const onAnswerSelected = (answer) => {
   const isCorrect = state.turnData.author.books.some((book) => book === answer);
@@ -71,25 +82,30 @@ const onAnswerSelected = (answer) => {
   render();
 };
 
-const AddAuthorForm = ({match}) => {
-  return (
-    <div>
-      <h1> Add Author </h1>
-      <p>{JSON.stringify(match)}</p>
-    </div>
-  )
+// We make these small intermediary components so that we can specify props more easily. Instead of doing this down in the component={} React Route
+const App = () => {
+  return <AuthorQuiz {...state}
+    onAnswerSelected={onAnswerSelected}
+    onContinue={() => {
+      state = resetState();
+      render();
+    }}
+  />;
 }
 
-const App = () => {
-  return <AuthorQuiz {...state} onAnswerSelected={onAnswerSelected} />;
-}
+const AuthorWrapper = withRouter(({history}) => 
+  <AddAuthorForm onAddAuthor={(author) => {
+    authors.push(author);
+    history.push('/');
+  }} />
+)
 
 const render = () => {
   ReactDOM.render(
     <BrowserRouter>
       <React.Fragment>    {/*Two routes cannot be direct children of BrowserRouter, thus we use React.Fragment to wrap them together under single parent.*/}
         <Route exact path="/" component={App} />    {/*React.Fragment does not add anything to the DOM*/}
-        <Route path="/add" component={AddAuthorForm} />
+        <Route path="/add" component={AuthorWrapper} />
       </React.Fragment>
     </BrowserRouter>, document.getElementById('root')
   );
